@@ -3,18 +3,29 @@ const { join } = require("path");
 const Plot = require("plotly-notebook-js");
 const puppeteer = require("puppeteer");
 
-async function genPlot(batchName, algoKey, timings, errorRates) {
+async function genPlot(batchName, algoKey, timings, totalTimes, errorRates) {
   const algoPlot = Plot.createPlot(
     [
       {
         x: Object.keys(timings),
         y: Object.values(timings),
         name: "timings",
+        type: "scatter",
+        line: { shape: "spline", color: "green" },
+      },
+      {
+        x: Object.keys(totalTimes),
+        y: Object.values(totalTimes),
+        name: "total_time",
+        type: "scatter",
+        line: { shape: "spline", color: "blue" },
       },
       {
         x: Object.keys(errorRates),
         y: Object.values(errorRates),
         name: "error_rate",
+        type: "scatter",
+        line: { shape: "spline", color: "red" },
       },
     ],
     {
@@ -22,14 +33,10 @@ async function genPlot(batchName, algoKey, timings, errorRates) {
       xaxis: {
         title: "testcase",
         showline: true,
-        mirror: "allticks",
-        ticks: "inside",
       },
       yaxis: {
         title: "time (ms)",
         showline: true,
-        mirror: "allticks",
-        ticks: "inside",
       },
     },
   );
@@ -47,6 +54,7 @@ async function genPlot(batchName, algoKey, timings, errorRates) {
   const filename = `${batchName}_${algoKey}.png`;
   await page.screenshot({ path: join(__dirname, "../plots", filename) });
   await browser.close();
+  return filename;
 }
 
 module.exports = { genPlot };
