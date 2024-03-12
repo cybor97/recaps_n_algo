@@ -1,3 +1,5 @@
+const TEST_CASES = require("./testcases/fibonacci");
+
 function runRecursive(n) {
   if (!n || n <= 1) {
     return n;
@@ -17,7 +19,9 @@ function runRecursiveMemo(n) {
       return memo[n];
     }
 
-    return calculate(n - 2) + calculate(n - 1);
+    const result = calculate(n - 2) + calculate(n - 1);
+    memo[n] = result;
+    return result;
   }
 
   return calculate(n);
@@ -39,14 +43,16 @@ function runLoop(n) {
 }
 
 function test(fn, n) {
-  const seq = [
-    0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597,
-    2584, 4181,
-  ];
-  return fn(n) === seq[n];
+  if (fn === runRecursive && n > 45) {
+    return null;
+  }
+  n = parseInt(n, 10);
+  return fn(n) === TEST_CASES[n];
 }
 
-export default {
-  algo: [runRecursive, runRecursiveMemo, runLoop],
+module.exports = {
+  name: "Fibonacci",
+  algos: { runRecursive, runRecursiveMemo, runLoop },
   test,
+  testCases: TEST_CASES,
 };

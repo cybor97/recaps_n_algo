@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "plotly-notebook-js": "^0.1.2",
+    "puppeteer": "^22.4.1"
+  }
+}
