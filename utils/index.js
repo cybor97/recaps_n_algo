@@ -3,6 +3,10 @@ const { join } = require("path");
 const Plot = require("plotly-notebook-js");
 const puppeteer = require("puppeteer");
 
+function log(...data) {
+  console.log(new Date().toISOString(), ...data);
+}
+
 async function genPlot(batchName, algoKey, timings, totalTimes, errorRates) {
   const algoPlot = Plot.createPlot(
     [
@@ -57,4 +61,4 @@ async function genPlot(batchName, algoKey, timings, totalTimes, errorRates) {
   return filename;
 }
 
-module.exports = { genPlot };
+module.exports = { genPlot, log };

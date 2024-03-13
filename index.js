@@ -1,7 +1,7 @@
 const { readdirSync, writeFileSync } = require("fs");
 const { join } = require("path");
 
-const { genPlot } = require("./utils");
+const { genPlot, log } = require("./utils");
 
 async function main() {
   const algosBatchs = readdirSync(join(__dirname, "algos"))
@@ -10,9 +10,12 @@ async function main() {
   const plots = [];
 
   for (const algoBatch of algosBatchs) {
-    const { name, algos, test, testCases } = algoBatch;
-    console.log(`Running ${name}...`);
+    const { name, algos, test, maxTestCases, getTestCases } = algoBatch;
+    log(`Generating test cases for ${name}...`);
+    const testCases = getTestCases(maxTestCases);
     for (const algoKey in algos) {
+      log(`Running ${name}/${algoKey}...`);
+
       const timings = {};
       const errorRates = {};
       const totalTimes = {};
@@ -21,7 +24,7 @@ async function main() {
       let startTotalTime = Date.now();
       for (const testCase in testCases) {
         const start = Date.now();
-        const testResult = test(algos[algoKey], testCase);
+        const testResult = test(algos[algoKey], testCases, testCase);
         if (testResult === null) {
           // incapable
           break;
@@ -35,7 +38,13 @@ async function main() {
         casesRan++;
       }
       const totalTime = Date.now() - startTotalTime;
-      const filename = await genPlot(name, algoKey, timings, totalTimes, errorRates);
+      const filename = await genPlot(
+        name,
+        algoKey,
+        timings,
+        totalTimes,
+        errorRates,
+      );
       plots.push({ name, algoKey, filename, totalTime, casesRan });
     }
   }
